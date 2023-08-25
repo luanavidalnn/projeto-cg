@@ -5,7 +5,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
 socketio = SocketIO(app)
 
-coordinates = {'x': 0, 'y': 0}  # Dicionário para armazenar as coordenadas
+coordinates = {'x': 0, 'y': 0}
 
 @app.route('/')
 def index():
@@ -13,14 +13,14 @@ def index():
 
 @socketio.on('connect')
 def on_connect():
-    emit('update_coordinates', coordinates)  # Envia as coordenadas atuais ao cliente
+    emit('update_coordinates', coordinates)
 
-@socketio.on('change_coordinates')  # Evento para receber as coordenadas atualizadas
+@socketio.on('change_coordinates')
 def change_coordinates(data):
     global coordinates
     coordinates['x'] = data['x']
     coordinates['y'] = data['y']
-    emit('update_coordinates', coordinates, broadcast=True)  # Envia as coordenadas atualizadas para todos os clientes
+    emit('update_coordinates', coordinates, broadcast=True)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
