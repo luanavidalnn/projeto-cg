@@ -1,16 +1,26 @@
 from flask import Flask, render_template
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret'
+socketio = SocketIO(app)
+
+coordinates = {'x': 0, 'y': 0}  # Dicionário para armazenar as coordenadas
 
 @app.route('/')
 def index():
-    ndc_x = 0.3
-    ndc_y = -0.6
+    return render_template('index.html')
 
-    screen_x = (ndc_x + 1) * 400
-    screen_y = (-ndc_y + 1) * 300
+@socketio.on('connect')
+def on_connect():
+    emit('update_coordinates', coordinates)  # Envia as coordenadas atuais ao cliente
 
-    return render_template('index.html', screen_x=screen_x, screen_y=screen_y)
+@socketio.on('change_coordinates')  # Evento para receber as coordenadas atualizadas
+def change_coordinates(data):
+    global coordinates
+    coordinates['x'] = data['x']
+    coordinates['y'] = data['y']
+    emit('update_coordinates', coordinates, broadcast=True)  # Envia as coordenadas atualizadas para todos os clientes
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)
