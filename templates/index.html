@@ -3,21 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projeto de computação gráfica</title>
+    <title>Computação Gráfica</title>
     <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            width: 800px; 
+            height: 600px; 
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        canvas {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div>
-        <label for="inputX">X Coordinate:</label>
+        <label for="inputX">X:</label>
         <input type="number" id="inputX" value="0">
-        <label for="inputY">Y Coordinate:</label>
-        <input type="number" id="inputY" value="0">
-        <button id="drawButton">Draw Pixel</button>
+        <p><label for="inputY">Y:</label>
+        <input type="number" id="inputY" value="0"></p>
+        <p><button id="drawButton">Enter</button></p>
     </div>
-    <canvas id="glCanvas"></canvas>
+    <canvas id="glCanvas"  width="500" height="500"></canvas>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
         const canvas = document.getElementById("glCanvas");
@@ -25,13 +42,8 @@
         const width = canvas.width;
         const height = canvas.height;
 
-        // Function to draw the Cartesian plane
-        function drawCartesianPlane() {
-            ctx.clearRect(0, 0, width, height);
-
-            // Draw grid lines
+        function drawGrid(step) {
             ctx.beginPath();
-            const step = 20; // spacing between grid lines
             for (let x = 0; x <= width; x += step) {
                 ctx.moveTo(x, 0);
                 ctx.lineTo(x, height);
@@ -42,30 +54,29 @@
             }
             ctx.strokeStyle = "#ccc";
             ctx.stroke();
+        }
 
-            // Draw X-axis
-            ctx.beginPath();
-            ctx.moveTo(0, height / 2);
-            ctx.lineTo(width, height / 2);
-            ctx.strokeStyle = "#000"; // black for axis
-            ctx.stroke();
-
-            // Draw Y-axis
-            ctx.beginPath();
-            ctx.moveTo(width / 2, 0);
-            ctx.lineTo(width / 2, height);
-            ctx.strokeStyle = "#000"; // black for axis
-            ctx.stroke();
-
-            // Draw X-axis label
+        function drawAxisLabels() {
             ctx.font = "14px Arial";
             ctx.fillText("X", width - 10, height / 2 - 10);
-
-            // Draw Y-axis label
             ctx.fillText("Y", width / 2 + 10, 15);
         }
 
-        // Initial drawing of the Cartesian plane
+        function drawCartesianPlane() {
+            ctx.clearRect(0, 0, width, height);
+            drawGrid(20);
+
+            ctx.beginPath();
+            ctx.moveTo(0, height / 2);
+            ctx.lineTo(width, height / 2);
+            ctx.moveTo(width / 2, 0);
+            ctx.lineTo(width / 2, height);
+            ctx.strokeStyle = "#000";
+            ctx.stroke();
+
+            drawAxisLabels();
+        }
+
         drawCartesianPlane();
 
         const socket = io.connect('http://' + document.domain + ':' + location.port);
@@ -74,9 +85,8 @@
             const x = data.x;
             const y = data.y;
 
-            drawCartesianPlane();  // Redraw Cartesian plane
+            drawCartesianPlane();
 
-            // Draw pixel
             ctx.fillStyle = "red";
             const pixelX = width / 2 + x;
             const pixelY = height / 2 - y;
