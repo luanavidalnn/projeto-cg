@@ -28,11 +28,22 @@
 </head>
 <body>
     <div>
-        <label for="inputX">X:</label>
-        <input type="number" id="inputX" value="0">
-        <p><label for="inputY">Y:</label>
-        <input type="number" id="inputY" value="0"></p>
+        <label for="inputYMax">X(max):</label>
+        <input type="number" id="inputXMax" value="0">
+        <p><label for="inputXMin">X(min):</label>
+        <input type="number" id="inputxMin" value="0"></p>
+        <p><label for="outputX">X:</label>
+        <input type="number" id="inputX" value="0"></p>
+
+        <label for="inputYMax">Y(max):</label>
+        <input type="number" id="inputYMax" value="0">
+        <p><label for="inputYMin">Y(min):</label>
+        <input type="number" id="inputYMin" value="0"></p>
+        <p><label for="outputY">Y:</label>
+        <input type="number" id="inputY" value="0"></p> 
+
         <p><button id="drawButton">Enter</button></p>
+
     </div>
     <canvas id="glCanvas"  width="500" height="500"></canvas>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
@@ -64,7 +75,7 @@
 
         function drawCartesianPlane() {
             ctx.clearRect(0, 0, width, height);
-            drawGrid(20);
+            drawGrid(10);
 
             ctx.beginPath();
             ctx.moveTo(0, height / 2);
@@ -102,7 +113,7 @@
             const y = parseFloat(inputY.value);
 
             if (!isNaN(x) && !isNaN(y)) {
-                socket.emit('change_coordinates', { x: x, y: y });
+                socket.emit('change_coordinates', { x: x, y: y, xMax: inputXMax, yMax: inputYMax, xMin: inputXMin, yMin: inputYMin });
             }
         });
     </script>
