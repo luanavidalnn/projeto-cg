@@ -31,7 +31,6 @@ def ndc_coordinates(dc_x, dc_y):
     ndc_y = -(dc_y - WINDOW_SIZE[1] // 2) / GRID_SPACING
     return ndc_x, ndc_y
 
-# Função para desenhar a malha quadriculada
 def draw_grid():
     for x in range(0, WINDOW_SIZE[0], GRID_SPACING):
         pygame.draw.line(screen, GRID_COLOR, (x, 0), (x, WINDOW_SIZE[1]))
@@ -41,33 +40,52 @@ def draw_grid():
 # Inicialização do pygame_gui
 gui_manager = pygame_gui.UIManager(WINDOW_SIZE)
 
+# Definição dos rótulos para as caixas de entrada
+label_x_min = pygame_gui.elements.UILabel(
+    relative_rect=pygame.Rect((5, 10), (80, 30)),
+    text="x_min:",
+    manager=gui_manager,
+)
+label_x_max = pygame_gui.elements.UILabel(
+    relative_rect=pygame.Rect((5, 50), (80, 30)),
+    text="x_max:",
+    manager=gui_manager,
+)
+label_y_min = pygame_gui.elements.UILabel(
+    relative_rect=pygame.Rect((5, 90), (80, 30)),
+    text="y_min:",
+    manager=gui_manager,
+)
+label_y_max = pygame_gui.elements.UILabel(
+    relative_rect=pygame.Rect((5, 130), (80, 30)),
+    text="y_max:",
+    manager=gui_manager,
+)
+
 # Definição das caixas de entrada usando pygame_gui
 input_x_min = pygame_gui.elements.UITextEntryLine(
-    relative_rect=pygame.Rect((10, 10), (140, 30)),
+    relative_rect=pygame.Rect((85, 10), (140, 30)),
     manager=gui_manager
 )
 input_x_max = pygame_gui.elements.UITextEntryLine(
-    relative_rect=pygame.Rect((10, 50), (140, 30)),
+    relative_rect=pygame.Rect((85, 50), (140, 30)),
     manager=gui_manager
 )
 input_y_min = pygame_gui.elements.UITextEntryLine(
-    relative_rect=pygame.Rect((10, 90), (140, 30)),
+    relative_rect=pygame.Rect((85, 90), (140, 30)),
     manager=gui_manager
 )
 input_y_max = pygame_gui.elements.UITextEntryLine(
-    relative_rect=pygame.Rect((10, 130), (140, 30)),
+    relative_rect=pygame.Rect((85, 130), (140, 30)),
     manager=gui_manager
 )
 
 # Definição do botão
 enter_button = pygame_gui.elements.UIButton(
-    relative_rect=pygame.Rect((160, 130), (80, 30)),
+    relative_rect=pygame.Rect((180, 180), (80, 30)),  # Ajuste a posição vertical aqui
     text="Enter",
     manager=gui_manager
 )
-
-# Lista de caixas de entrada
-input_elements = [input_x_min, input_x_max, input_y_min, input_y_max]
 
 # Variáveis para armazenar os valores de entrada
 x_min = 0.0
@@ -90,15 +108,10 @@ while running:
 
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED and event.ui_element == enter_button:
-                for input_element in input_elements:
-                    if input_element == input_x_min:
-                        x_min = float(input_element.get_text())
-                    elif input_element == input_x_max:
-                        x_max = float(input_element.get_text())
-                    elif input_element == input_y_min:
-                        y_min = float(input_element.get_text())
-                    elif input_element == input_y_max:
-                        y_max = float(input_element.get_text())
+                x_min = float(input_x_min.get_text().strip())
+                x_max = float(input_x_max.get_text().strip())
+                y_min = float(input_y_min.get_text().strip())
+                y_max = float(input_y_max.get_text().strip())
 
     gui_manager.update(time_delta)
     
@@ -125,16 +138,19 @@ while running:
     pygame.draw.rect(screen, SQUARE_COLOR, square_rect)
 
     # Exibir valores na tela
-    font = pygame.font.Font(None, 30)
+    small_font = pygame.font.Font(None, 20)
+    text_position_y = WINDOW_SIZE[1] - 30
+
     text_lines = [
-        f"x_min: {x_min}, x_max: {x_max}, y_min: {y_min}, y_max: {y_max}",
-        f"DC: ({dc_x_min}, {dc_y_max}), ({dc_x_max}, {dc_y_min})",
+        f"x_min: {x_min:.2f}, x_max: {x_max:.2f}, y_min: {y_min:.2f}, y_max: {y_max:.2f}",
+        f"DC: ({dc_x_min:.2f}, {dc_y_max:.2f}), ({dc_x_max:.2f}, {dc_y_min:.2f})",
         f"NDC: ({ndc_x_min:.2f}, {ndc_y_max:.2f}), ({ndc_x_max:.2f}, {ndc_y_min:.2f})"
     ]
 
     for i, line in enumerate(text_lines):
-        text = font.render(line, True, TEXT_COLOR)
-        screen.blit(text, (10, 10 + i * 30))
+        text = small_font.render(line, True, TEXT_COLOR)
+        text_rect = text.get_rect(center=(WINDOW_SIZE[0] // 2, text_position_y + i * 20))
+        screen.blit(text, text_rect)
 
     # Atualizar a tela
     pygame.display.flip()
