@@ -1,4 +1,5 @@
 import pygame
+import pygame_gui
 import sys
 
 # Inicialização do Pygame
@@ -7,7 +8,7 @@ pygame.init()
 # Definição das dimensões da janela
 WINDOW_SIZE = (800, 600)
 screen = pygame.display.set_mode(WINDOW_SIZE)
-pygame.display.set_caption("Projeção de Quadrado com Pygame")
+pygame.display.set_caption("Projeção de Quadrado com Pygame GUI")
 
 # Cores
 GRID_COLOR = (200, 200, 200)
@@ -36,31 +37,76 @@ def draw_grid():
     for y in range(0, WINDOW_SIZE[1], GRID_SPACING):
         pygame.draw.line(screen, GRID_COLOR, (0, y), (WINDOW_SIZE[0], y))
 
-# Entrada do usuário para as coordenadas
-x_min = float(input("Digite o valor de x mínimo: "))
-x_max = float(input("Digite o valor de x máximo: "))
-y_min = float(input("Digite o valor de y mínimo: "))
-y_max = float(input("Digite o valor de y máximo: "))
+# Inicialização do pygame_gui
+gui_manager = pygame_gui.UIManager(WINDOW_SIZE)
 
-# Calcular as coordenadas DC do quadrado
-dc_x_min, dc_y_max = dc_coordinates(x_min, y_max)
-dc_x_max, dc_y_min = dc_coordinates(x_max, y_min)
+# Definição das caixas de entrada usando pygame_gui
+input_x_min = pygame_gui.elements.UITextEntryLine(
+    relative_rect=pygame.Rect((10, 10), (140, 30)),
+    manager=gui_manager
+)
+input_x_max = pygame_gui.elements.UITextEntryLine(
+    relative_rect=pygame.Rect((10, 50), (140, 30)),
+    manager=gui_manager
+)
+input_y_min = pygame_gui.elements.UITextEntryLine(
+    relative_rect=pygame.Rect((10, 90), (140, 30)),
+    manager=gui_manager
+)
+input_y_max = pygame_gui.elements.UITextEntryLine(
+    relative_rect=pygame.Rect((10, 130), (140, 30)),
+    manager=gui_manager
+)
 
-# Calcular as coordenadas NDC do quadrado
-ndc_x_min, ndc_y_max = ndc_coordinates(dc_x_min, dc_y_max)
-ndc_x_max, ndc_y_min = ndc_coordinates(dc_x_max, dc_y_min)
+# Variáveis para armazenar os valores de entrada
+x_min = 0.0
+x_max = 0.0
+y_min = 0.0
+y_max = 0.0
 
 # Loop principal do jogo
 running = True
+clock = pygame.time.Clock()
+
 while running:
+    time_delta = clock.tick(60) / 1000.0
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        gui_manager.process_events(event)
+
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
+                if event.ui_element == input_x_min:
+                    if event.text:
+                        x_min = float(event.text)
+                elif event.ui_element == input_x_max:
+                    if event.text:
+                        x_max = float(event.text)
+                elif event.ui_element == input_y_min:
+                    if event.text:
+                        y_min = float(event.text)
+                elif event.ui_element == input_y_max:
+                    if event.text:
+                        y_max = float(event.text)
+
+    gui_manager.update(time_delta)
 
     # Preencher a tela com uma cor de fundo
     screen.fill((255, 255, 255))  # Branco
 
     draw_grid()
+
+    # Desenhar UI
+    gui_manager.draw_ui(screen)
+
+    # Realizar os cálculos com os valores de entrada
+    dc_x_min, dc_y_max = dc_coordinates(x_min, y_max)
+    dc_x_max, dc_y_min = dc_coordinates(x_max, y_min)
+    ndc_x_min, ndc_y_max = ndc_coordinates(dc_x_min, dc_y_max)
+    ndc_x_max, ndc_y_min = ndc_coordinates(dc_x_max, dc_y_min)
 
     # Desenhar os eixos x e y
     pygame.draw.line(screen, AXIS_COLOR, (0, WINDOW_SIZE[1] // 2), (WINDOW_SIZE[0], WINDOW_SIZE[1] // 2))
