@@ -31,6 +31,7 @@ def ndc_coordinates(dc_x, dc_y):
     ndc_y = -(dc_y - WINDOW_SIZE[1] // 2) / GRID_SPACING
     return ndc_x, ndc_y
 
+# Função para desenhar a malha quadriculada
 def draw_grid():
     for x in range(0, WINDOW_SIZE[0], GRID_SPACING):
         pygame.draw.line(screen, GRID_COLOR, (x, 0), (x, WINDOW_SIZE[1]))
@@ -58,6 +59,16 @@ input_y_max = pygame_gui.elements.UITextEntryLine(
     manager=gui_manager
 )
 
+# Definição do botão
+enter_button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((160, 130), (80, 30)),
+    text="Enter",
+    manager=gui_manager
+)
+
+# Lista de caixas de entrada
+input_elements = [input_x_min, input_x_max, input_y_min, input_y_max]
+
 # Variáveis para armazenar os valores de entrada
 x_min = 0.0
 x_max = 0.0
@@ -78,22 +89,19 @@ while running:
         gui_manager.process_events(event)
 
         if event.type == pygame.USEREVENT:
-            if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
-                if event.ui_element == input_x_min:
-                    if event.text:
-                        x_min = float(event.text)
-                elif event.ui_element == input_x_max:
-                    if event.text:
-                        x_max = float(event.text)
-                elif event.ui_element == input_y_min:
-                    if event.text:
-                        y_min = float(event.text)
-                elif event.ui_element == input_y_max:
-                    if event.text:
-                        y_max = float(event.text)
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED and event.ui_element == enter_button:
+                for input_element in input_elements:
+                    if input_element == input_x_min:
+                        x_min = float(input_element.get_text())
+                    elif input_element == input_x_max:
+                        x_max = float(input_element.get_text())
+                    elif input_element == input_y_min:
+                        y_min = float(input_element.get_text())
+                    elif input_element == input_y_max:
+                        y_max = float(input_element.get_text())
 
     gui_manager.update(time_delta)
-
+    
     # Preencher a tela com uma cor de fundo
     screen.fill((255, 255, 255))  # Branco
 
