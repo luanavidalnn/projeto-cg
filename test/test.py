@@ -7,8 +7,9 @@ pygame.init()
 
 # Definição das dimensões da janela
 WINDOW_SIZE = (800, 600)
-screen = pygame.display.set_mode(WINDOW_SIZE)
-pygame.display.set_caption("Projeção de Quadrado com Pygame GUI")
+RESOLUTION_SIZE = (1080, 760)
+screen = pygame.display.set_mode(RESOLUTION_SIZE)
+pygame.display.set_caption("COMPUTAÇÃO GRÁFICA")
 
 # Cores
 GRID_COLOR = (200, 200, 200)
@@ -21,14 +22,14 @@ GRID_SPACING = 20
 
 # Função para calcular as coordenadas DC (Device Coordinates)
 def dc_coordinates(x, y):
-    dc_x = WINDOW_SIZE[0] // 2 + x * GRID_SPACING
-    dc_y = WINDOW_SIZE[1] // 2 - y * GRID_SPACING
+    dc_x = RESOLUTION_SIZE[0] // 2 + x * GRID_SPACING
+    dc_y = RESOLUTION_SIZE[1] // 2 - y * GRID_SPACING
     return dc_x, dc_y
 
 # Função para converter DC em NDC
 def ndc_coordinates(dc_x, dc_y):
-    ndc_x = (dc_x - WINDOW_SIZE[0] // 2) / GRID_SPACING
-    ndc_y = -(dc_y - WINDOW_SIZE[1] // 2) / GRID_SPACING
+    ndc_x = (dc_x - RESOLUTION_SIZE[0] // 2) / GRID_SPACING
+    ndc_y = -(dc_y - RESOLUTION_SIZE[1] // 2) / GRID_SPACING
     return ndc_x, ndc_y
 
 def draw_grid():
@@ -139,7 +140,7 @@ while running:
 
     # Exibir valores na tela
     small_font = pygame.font.Font(None, 20)
-    text_position_y = WINDOW_SIZE[1] - 30
+    text_position_y = WINDOW_SIZE[1] - 20
 
     text_lines = [
         f"x_min: {x_min:.2f}, x_max: {x_max:.2f}, y_min: {y_min:.2f}, y_max: {y_max:.2f}",
