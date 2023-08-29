@@ -6,9 +6,8 @@ import sys
 pygame.init()
 
 # Definição das dimensões da janela
-WINDOW_SIZE = (800, 600)
-RESOLUTION_SIZE = (1080, 760)
-screen = pygame.display.set_mode(RESOLUTION_SIZE)
+WINDOW_SIZE = (1080, 760)
+screen = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("COMPUTAÇÃO GRÁFICA")
 
 # Cores
@@ -18,18 +17,18 @@ SQUARE_COLOR = (0, 0, 255)
 TEXT_COLOR = (0, 0, 0)
 
 # Configuração da malha quadriculada
-GRID_SPACING = 20
+GRID_SPACING = 10
 
 # Função para calcular as coordenadas DC (Device Coordinates)
 def dc_coordinates(x, y):
-    dc_x = RESOLUTION_SIZE[0] // 2 + x * GRID_SPACING
-    dc_y = RESOLUTION_SIZE[1] // 2 - y * GRID_SPACING
+    dc_x = WINDOW_SIZE[0] // 2 + x * GRID_SPACING
+    dc_y = WINDOW_SIZE[1] // 2 - y * GRID_SPACING
     return dc_x, dc_y
 
 # Função para converter DC em NDC
 def ndc_coordinates(dc_x, dc_y):
-    ndc_x = (dc_x - RESOLUTION_SIZE[0] // 2) / GRID_SPACING
-    ndc_y = -(dc_y - RESOLUTION_SIZE[1] // 2) / GRID_SPACING
+    ndc_x = (dc_x - WINDOW_SIZE[0] // 2) / GRID_SPACING
+    ndc_y = -(dc_y - WINDOW_SIZE[1] // 2) / GRID_SPACING
     return ndc_x, ndc_y
 
 def draw_grid():
@@ -120,6 +119,39 @@ while running:
     screen.fill((255, 255, 255))  # Branco
 
     draw_grid()
+    
+    
+    # Desenhar rótulos nos eixos
+    font = pygame.font.Font(None, 24)
+
+    x_label = font.render("x", True, TEXT_COLOR)
+    x_label_rect = x_label.get_rect(center=(WINDOW_SIZE[0] - 15, WINDOW_SIZE[1] // 2 + 20))
+    screen.blit(x_label, x_label_rect)
+
+    y_label = font.render("y", True, TEXT_COLOR)
+    y_label_rect = y_label.get_rect(center=(WINDOW_SIZE[0] // 2 + 20, 15))
+    screen.blit(y_label, y_label_rect)
+    
+    # Desenhar setas nos eixos
+    arrow_size = 10
+    
+    # Seta no eixo x positivo
+    pygame.draw.polygon(
+        screen,
+        AXIS_COLOR,
+        [(WINDOW_SIZE[0] - arrow_size, WINDOW_SIZE[1] // 2 - arrow_size),
+        (WINDOW_SIZE[0], WINDOW_SIZE[1] // 2),
+        (WINDOW_SIZE[0] - arrow_size, WINDOW_SIZE[1] // 2 + arrow_size)]
+    )
+
+    # Seta no eixo y positivo
+    pygame.draw.polygon(
+        screen,
+        AXIS_COLOR,
+        [(WINDOW_SIZE[0] // 2 - arrow_size, arrow_size),
+        (WINDOW_SIZE[0] // 2, 0),
+        (WINDOW_SIZE[0] // 2 + arrow_size, arrow_size)]
+    )
 
     # Desenhar UI
     gui_manager.draw_ui(screen)
@@ -134,13 +166,9 @@ while running:
     pygame.draw.line(screen, AXIS_COLOR, (0, WINDOW_SIZE[1] // 2), (WINDOW_SIZE[0], WINDOW_SIZE[1] // 2))
     pygame.draw.line(screen, AXIS_COLOR, (WINDOW_SIZE[0] // 2, 0), (WINDOW_SIZE[0] // 2, WINDOW_SIZE[1]))
 
-    # Desenhar o quadrado projetado
-    square_rect = pygame.Rect(dc_x_min, dc_y_min, dc_x_max - dc_x_min, dc_y_max - dc_y_min)
-    pygame.draw.rect(screen, SQUARE_COLOR, square_rect)
-
     # Exibir valores na tela
     small_font = pygame.font.Font(None, 20)
-    text_position_y = WINDOW_SIZE[1] - 20
+    text_position_y = WINDOW_SIZE[1] - 50
 
     text_lines = [
         f"x_min: {x_min:.2f}, x_max: {x_max:.2f}, y_min: {y_min:.2f}, y_max: {y_max:.2f}",
