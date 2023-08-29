@@ -82,7 +82,7 @@ input_y_max = pygame_gui.elements.UITextEntryLine(
 
 # Definição do botão
 enter_button = pygame_gui.elements.UIButton(
-    relative_rect=pygame.Rect((180, 180), (80, 30)),  # Ajuste a posição vertical aqui
+    relative_rect=pygame.Rect((85, 180), (80, 30)),  # Ajuste a posição vertical aqui
     text="Enter",
     manager=gui_manager
 )
