@@ -13,11 +13,17 @@ pygame.display.set_caption("COMPUTAÇÃO GRÁFICA")
 # Cores
 GRID_COLOR = (200, 200, 200)
 AXIS_COLOR = (0, 0, 0)
-SQUARE_COLOR = (0, 0, 255)
+PIXEL_COLOR = (255, 0, 0)
 TEXT_COLOR = (0, 0, 0)
 
 # Configuração da malha quadriculada
 GRID_SPACING = 10
+
+# Função para calcular as coordenadas da malha
+def grid_coordinates(x, y):
+    grid_x = x * GRID_SPACING
+    grid_y = y * GRID_SPACING
+    return grid_x, grid_y
 
 # Função para calcular as coordenadas DC (Device Coordinates)
 def dc_coordinates(x, y):
@@ -118,8 +124,7 @@ while running:
     # Preencher a tela com uma cor de fundo
     screen.fill((255, 255, 255))  # Branco
 
-    draw_grid()
-    
+    draw_grid()    
     
     # Desenhar rótulos nos eixos
     font = pygame.font.Font(None, 24)
@@ -180,6 +185,10 @@ while running:
         text = small_font.render(line, True, TEXT_COLOR)
         text_rect = text.get_rect(center=(WINDOW_SIZE[0] // 2, text_position_y + i * 20))
         screen.blit(text, text_rect)
+        
+    # Desenhar um quadrado vermelho na malha
+    square_x, square_y = grid_coordinates(5, 3)  # Exemplo: quadrado na posição (5, 3) da malha
+    pygame.draw.rect(screen, PIXEL_COLOR, (square_x, square_y, GRID_SPACING, GRID_SPACING))
 
     # Atualizar a tela
     pygame.display.flip()
