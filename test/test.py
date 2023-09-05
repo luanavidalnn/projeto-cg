@@ -186,10 +186,18 @@ while running:
         text_rect = text.get_rect(center=(WINDOW_SIZE[0] // 2, text_position_y + i * 20))
         screen.blit(text, text_rect)
         
-    # Desenhar um quadrado vermelho na malha
-    square_x, square_y = grid_coordinates(5, 3)  # Exemplo: quadrado na posição (5, 3) da malha
-    pygame.draw.rect(screen, PIXEL_COLOR, (square_x, square_y, GRID_SPACING, GRID_SPACING))
+    # Desenhar um quadrado vermelho na malha (coordenadas DC)
+    square_size = GRID_SPACING
+    square_x_dc = WINDOW_SIZE[0] // 2 - square_size // 2 + int(dc_x_min * GRID_SPACING)
+    square_y_dc = WINDOW_SIZE[1] // 2 - square_size // 2 - int(dc_y_max * GRID_SPACING)
 
+    pygame.draw.rect(screen, PIXEL_COLOR, (square_x_dc, square_y_dc, square_size, square_size))
+
+    # Desenhar um quadrado azul na malha (coordenadas NDC)
+    square_x_ndc = WINDOW_SIZE[0] // 2 - square_size // 2 + int(ndc_x_min * GRID_SPACING)
+    square_y_ndc = WINDOW_SIZE[1] // 2 - square_size // 2 - int(ndc_y_max * GRID_SPACING)
+
+    pygame.draw.rect(screen, (0, 0, 255), (square_x_ndc, square_y_ndc, square_size, square_size))
     # Atualizar a tela
     pygame.display.flip()
 
